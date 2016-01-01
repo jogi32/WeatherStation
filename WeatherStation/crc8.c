@@ -1,6 +1,7 @@
 /*
  * crc8.c
  *
+ * Modified tszafran
  */
 
 #include <inttypes.h>
@@ -8,6 +9,8 @@
 #define CRC8INIT	0x00
 #define CRC8POLY	0x18              //0X18 = X^8+X^5+X^4+X^0
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 uint8_t	crc8 ( uint8_t *data_in, uint16_t number_of_bytes_to_read )
 {
 	uint8_t	 crc;

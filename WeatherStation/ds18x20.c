@@ -1,6 +1,7 @@
 /*
  * ds18x20.c
  *
+ * Modified tszafran
  */
 #include <avr/io.h>
 #include <util/delay.h>
@@ -14,7 +15,7 @@
 uint8_t gSensorIDs[MAXSENSORS][OW_ROMCODE_SIZE];
 
 
-
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 uint8_t DS18X20_meas_to_cel( uint8_t fc, uint8_t *sp,
 	uint8_t* subzero, uint8_t* cel, uint8_t* cel_frac_bits)
 {
@@ -68,6 +69,7 @@ uint8_t DS18X20_meas_to_cel( uint8_t fc, uint8_t *sp,
    returns -1 if param-pair1 < param-pair2
             0 if ==
 			1 if >    */
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 int DS18X20_temp_cmp(uint8_t subzero1, uint16_t cel1,
 	uint8_t subzero2, uint16_t cel2)
 {
@@ -79,9 +81,11 @@ int DS18X20_temp_cmp(uint8_t subzero1, uint16_t cel1,
 	return 0;
 }
 
+
 /* find DS18X20 Sensors on 1-Wire-Bus
    input/ouput: diff is the result of the last rom-search
    output: id is the rom-code of the sensor found */
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void DS18X20_find_sensor(uint8_t *diff, uint8_t id[])
 {
 	for (;;) {
@@ -93,7 +97,7 @@ void DS18X20_find_sensor(uint8_t *diff, uint8_t id[])
 }
 
 
-
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 uint8_t search_sensors(void)
 {
 	uint8_t i;
@@ -124,11 +128,10 @@ uint8_t search_sensors(void)
 }
 
 
-
-
 /* get power status of DS18x20
    input  : id = rom_code
    returns: DS18X20_POWER_EXTERN or DS18X20_POWER_PARASITE */
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 uint8_t	DS18X20_get_power_status(uint8_t id[])
 {
 	uint8_t pstat;
@@ -139,8 +142,10 @@ uint8_t	DS18X20_get_power_status(uint8_t id[])
 	return (pstat) ? DS18X20_POWER_EXTERN:DS18X20_POWER_PARASITE;
 }
 
+
 /* start measurement (CONVERT_T) for all sensors if input id==NULL
    or for single sensor. then id is the rom-code */
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 uint8_t DS18X20_start_meas( uint8_t with_power_extern, uint8_t id[])
 {
 	ow_reset(); //**
@@ -156,10 +161,12 @@ uint8_t DS18X20_start_meas( uint8_t with_power_extern, uint8_t id[])
 	}
 }
 
+
 /* reads temperature (scratchpad) of sensor with rom-code id
    output: subzero==1 if temp.<0, cel: full celsius, mcel: frac
    in millicelsius*0.1
    i.e.: subzero=1, cel=18, millicel=5000 = -18,5000°C */
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 uint8_t DS18X20_read_meas(uint8_t *id, uint8_t *subzero, uint8_t *cel, uint8_t *cel_frac_bits)
 {
 	uint8_t i;
@@ -174,11 +181,14 @@ uint8_t DS18X20_read_meas(uint8_t *id, uint8_t *subzero, uint8_t *cel, uint8_t *
 	return DS18X20_OK;
 }
 
+
 /* reads temperature (scratchpad) of a single sensor (uses skip-rom)
    output: subzero==1 if temp.<0, cel: full celsius, mcel: frac
    in millicelsius*0.1
    i.e.: subzero=1, cel=18, millicel=5000 = -18,5000°C */
-uint8_t DS18X20_read_meas_single(uint8_t familycode, uint8_t *subzero, uint8_t *cel, uint8_t *cel_frac_bits)
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
+uint8_t DS18X20_read_meas_single(uint8_t familycode, uint8_t *subzero, uint8_t *cel, 
+								 uint8_t *cel_frac_bits)
 {
 	uint8_t i;
 	uint8_t sp[DS18X20_SP_SIZE];

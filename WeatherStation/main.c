@@ -16,6 +16,7 @@
 #include <util/delay.h>
 #include <util/setbaud.h>
 
+#include "BH1750.h"
 #include "BMP180.h"
 #include "dht.h"
 #include "ds18x20.h"
@@ -38,8 +39,6 @@ void ADC_init();
 void ADC_mes();
 void ADCReadVaue();
 void ADC_RUNTIME(uint32_t* MES);
-void BH1750_init (void);
-void BH1750_read (uint8_t Adress, uint8_t Mode, uint8_t Length, uint8_t *buf);
 void BH1750_getData();
 void BMP180_getData();
 void DS18X20Init();
@@ -69,20 +68,6 @@ const char CR = 13;
 
 float dthTemperature = 0;
 float dthHumidity = 0;
-
-//adres czujnika BH1750 0x23 przemno¿ony x2 dla trybu 8 bit
-#define BH1750_ADR 0x46
-
-// za³¹czenie czujnika
-#define BH1750_POWER_ON 0x01
-
-// reset rejestru pomiaru
-#define BH1750_RESET 0x07
-
-//tryby pomiaru do wybrania
-#define BH1750_ONE_TIME_HIGH_RES_MODE    0x20
-#define BH1750_ONE_TIME_HIGH_RES_MODE_2  0x21
-#define BH1750_ONE_TIME_LOW_RES_MODE     0x23
 
 // bufor dla dczytu pomiarów
 uint8_t light_buf [2];
@@ -217,33 +202,6 @@ void ADC_RUNTIME(uint32_t* MES)
 		*MES += ADC;
 	}
 	*MES /= NUM_FOR_MES;
-}
-
-
-//--------//--------//--------//--------//--------//--------//--------//--------//--------
-void BH1750_init (void)
-{
-	//funkcja inicjalizacji pracy czujnika BH1750
-	
-	TWI_start();
-	TWI_write(BH1750_ADR);
-	TWI_write(BH1750_POWER_ON);
-	TWI_write(BH1750_RESET);
-	TWI_stop();
-}
-
-
-//--------//--------//--------//--------//--------//--------//--------//--------//--------
-void BH1750_read(uint8_t Adress, uint8_t Mode, uint8_t Length, uint8_t *buf)
-{
-	//funkcja odczytu danych z czujnika BH1750
-	TWI_start();
-	TWI_write(Adress);
-	TWI_write(Mode);
-	TWI_start();
-	TWI_write(Adress +1);
-	while (Length--) *buf++ = TWI_read( Length ? ACK : NACK );
-	TWI_stop();
 }
 
 

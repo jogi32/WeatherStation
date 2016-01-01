@@ -1,6 +1,7 @@
 /*
  * onewire.c
  *
+ * Modified tszafran
  */
 #include <avr/io.h>
 #include <util/delay.h>

@@ -4,6 +4,7 @@
  *  Created on: 28 kwi 2014
  *  Autor: £ukasz £uczko
  *
+ *  Modified tszafran
  */
 
 #ifndef BMP180_H_

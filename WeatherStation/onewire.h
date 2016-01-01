@@ -1,6 +1,7 @@
 /*
  * onewire.h
  *
+ * Modified tszafran
  */
 
 #ifndef ONEWIRE_H_

@@ -1,6 +1,7 @@
 /*
  * DHT Library
  * 
+ * Modified tszafran
  */
 
 
@@ -14,6 +15,7 @@
 /*
  * get data from sensor
  */
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 #if DHT_FLOAT == 1
 int8_t dht_getdata(float *temperature, float *humidity) {
 #elif DHT_FLOAT == 0
@@ -107,6 +109,7 @@ int8_t dht_getdata(int8_t *temperature, int8_t *humidity) {
 /*
  * get temperature
  */
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 #if DHT_FLOAT == 1
 int8_t dht_gettemperature(float *temperature) {
 	float humidity = 0;
@@ -120,6 +123,7 @@ int8_t dht_gettemperature(int8_t *temperature) {
 /*
  * get humidity
  */
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 #if DHT_FLOAT == 1
 int8_t dht_gethumidity(float *humidity) {
 	float temperature = 0;
@@ -133,6 +137,7 @@ int8_t dht_gethumidity(int8_t *humidity) {
 /*
  * get temperature and humidity
  */
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 #if DHT_FLOAT == 1
 int8_t dht_gettemperaturehumidity(float *temperature, float *humidity) {
 #elif DHT_FLOAT == 0

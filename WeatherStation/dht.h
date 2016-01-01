@@ -1,6 +1,7 @@
 /*
  * DHT Library
  * 
+ * Modified tszafran
  */
 
 

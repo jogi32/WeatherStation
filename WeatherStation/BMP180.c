@@ -2,7 +2,9 @@
  *  Created on: 28 kwi 2014
  *  Autor: £ukasz £uczko
  *
+ *  Modified tszafran
  */
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -16,6 +18,8 @@ int AC1, AC2, AC3, B1, B2, MB, MC, MD;
 unsigned int AC4, AC5, AC6;
 long ut, up, t, p, B5;
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void BMP180_init( void ) {
 	uint8_t buf[22];
 	
@@ -35,6 +39,8 @@ void BMP180_init( void ) {
 
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void BMP180_getut(void) {
 	//odczyt temperatury bez kompensacji
 	uint8_t  buf[2], g=0x2E;
@@ -44,6 +50,8 @@ void BMP180_getut(void) {
 	ut = ((long) buf[0] << 8 | ((long) buf[1]));
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void BMP180_getup(void){
 	//odczyt cisnienia bez kompensacji
 	uint8_t  buf[3], g;
@@ -51,9 +59,12 @@ void BMP180_getup(void){
 	TWI_write_buf( BMP180_ADDR, 0xF4, 1, &g );
 	_delay_ms(2 + (3<<BMP180_MODE));
 	TWI_read_buf( BMP180_ADDR, 0xF6, 3, buf );
-	up = ((((long) buf[0] <<16) | ((long) buf[1] <<8) | ((long) buf[2])) >> (8-BMP180_MODE)); // wartoœæ cisnienia bez kompensacji
+	up = ((((long) buf[0] <<16) | ((long) buf[1] <<8) 
+		 | ((long) buf[2])) >> (8-BMP180_MODE)); // wartoœæ cisnienia bez kompensacji
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 long BMP180_gett(void){
 	long x1,x2, t;
 	BMP180_getut();
@@ -64,6 +75,8 @@ long BMP180_gett(void){
 	return t;
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 long BMP180_getp(void){
 //	long x1,x2,x3,b3,b6;
 	int32_t x1,x2,x3,b3,b6;

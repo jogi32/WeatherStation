@@ -1,12 +1,8 @@
-// 6 kabelków
-// LCD_D4,LCD_D5,LCD_D6,LCD_D7  magistrala 4 bity
-// EN -  enable signal
-// RS -  register select (dane albo rozkazy)
-// RW - zapis/odczyt u nas tylko zapis = 0
-
-//  dzia³a prawid³owo dla impulsów skróconych:  0.35 T (graniczne),    wyd³uzonych wiêcej ni¿ 10 x T,      T - d³ugoœæ standardowa
-
-
+/*
+ * lcd_displ.c
+ *
+ *  Author: tszafran
+ */ 
 
 #include <avr/io.h>
 #include <util/delay.h>

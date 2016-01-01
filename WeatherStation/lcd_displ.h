@@ -1,3 +1,12 @@
+/*
+ * lcd_displ.c
+ *
+ *  Author: tszafran
+ */ 
+
+#ifndef LCD_DISP_H_
+#define LCD_DISP_H_
+
 #define set_lcd_d4 PORTB|=(1<<4)
 #define clr_lcd_d4 PORTB&=~(1<<4)
 #define ddr_d4 DDRB|=(1<<4)
@@ -28,8 +37,6 @@
 #define ddr_light DDRC|=(1<<7)
 
 
-
-
 void lcd_init(void);
 void lcd_send_data(unsigned char b);
 void lcd_send_com(unsigned char b);
@@ -44,4 +51,4 @@ void lcd_iwrite(int i);
 int lcd_printf( char *format, ... );
 void lcd_swrite_P(const char *s);
 
-
+#endif /* LCD_DISP_H_ */

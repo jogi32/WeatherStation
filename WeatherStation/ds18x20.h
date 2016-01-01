@@ -1,6 +1,7 @@
 /*
  * ds18x28.h
  *
+ * Modified tszafran
  */
 
 #ifndef DS18X28_H_

@@ -1,6 +1,7 @@
 /*
  * crc8.h
  *
+ * Modified tszafran
  */
 
 #ifndef CRC8_H_

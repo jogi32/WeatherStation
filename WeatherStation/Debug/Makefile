@@ -37,6 +37,7 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
+../BH1750.c \
 ../BMP180.c \
 ../crc8.c \
 ../dht.c \
@@ -54,6 +55,7 @@ ASM_SRCS +=
 
 
 OBJS +=  \
+BH1750.o \
 BMP180.o \
 crc8.o \
 dht.o \
@@ -64,6 +66,7 @@ main.o \
 onewire.o
 
 OBJS_AS_ARGS +=  \
+BH1750.o \
 BMP180.o \
 crc8.o \
 dht.o \
@@ -74,6 +77,7 @@ main.o \
 onewire.o
 
 C_DEPS +=  \
+BH1750.d \
 BMP180.d \
 crc8.d \
 dht.d \
@@ -84,6 +88,7 @@ main.d \
 onewire.d
 
 C_DEPS_AS_ARGS +=  \
+BH1750.d \
 BMP180.d \
 crc8.d \
 dht.d \
@@ -107,6 +112,8 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
 
 
 
