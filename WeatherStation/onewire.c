@@ -18,24 +18,30 @@
 #define OW_DIR_OUT()  ( OW_DDR |= (1 << OW_PIN) )
 
 
-
-uint8_t ow_input_pin_state()
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
+uint8_t ow_input_pin_state(void)
 {
 	return OW_GET_IN();
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void ow_parasite_enable(void)
 {
     OW_OUT_HIGH();
 	OW_DIR_OUT();
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void ow_parasite_disable(void)
 {
     OW_OUT_LOW();
 	OW_DIR_IN();
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 uint8_t ow_reset(void)
 {
 	uint8_t err;
@@ -67,6 +73,7 @@ uint8_t ow_reset(void)
 	return err;
 }
 
+
 /* Timing issue when using runtime-bus-selection (!OW_ONE_BUS):
    The master should sample at the end of the 15-slot after initiating
    the read-time-slot. The variable bus-settings need more
@@ -74,6 +81,7 @@ uint8_t ow_reset(void)
    to achive a 15uS overall delay
    Setting/clearing a bit in I/O Register needs 1 cyle in OW_ONE_BUS
    but around 14 cyles in configureable bus (us-Delay is 4 cyles per uS) */
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 uint8_t ow_bit_io( uint8_t b )
 {
 	uint8_t sreg;
@@ -99,20 +107,24 @@ uint8_t ow_bit_io( uint8_t b )
 }
 
 
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 uint8_t ow_byte_wr( uint8_t b )
 {
 	uint8_t i = 8, j;
 
-	do {
+	do 
+	{
 		j = ow_bit_io( b & 1 );
 		b >>= 1;
 		if( j ) b |= 0x80;
-	} while( --i );
+	} 
+	while( --i );
 
 	return b;
 }
 
 
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 uint8_t ow_byte_rd( void )
 {
   // read by sending 0xff (a dontcare?)
@@ -120,66 +132,79 @@ uint8_t ow_byte_rd( void )
 }
 
 
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 uint8_t ow_rom_search( uint8_t diff, uint8_t *id )
 {
 	uint8_t i, j, next_diff;
 	uint8_t b;
 
-	if( ow_reset() ) return OW_PRESENCE_ERR;	// error, no device found
+	if( ow_reset() ) 
+	{
+		return OW_PRESENCE_ERR;			// error, no device found
+	}
 
-	ow_byte_wr( OW_SEARCH_ROM );			// ROM search command
+	ow_byte_wr( OW_SEARCH_ROM );		// ROM search command
 	next_diff = OW_LAST_DEVICE;			// unchanged on last device
 
-	i = OW_ROMCODE_SIZE * 8;					// 8 bytes
+	i = OW_ROMCODE_SIZE * 8;			// 8 bytes
 
-	do {
-		j = 8;					// 8 bits
+	do 
+	{
+		j = 8;							// 8 bits
 		do {
 			b = ow_bit_io( 1 );			// read bit
-			if( ow_bit_io( 1 ) ) {			// read complement bit
+			if( ow_bit_io( 1 ) ) 
+			{							// read complement bit
 				if( b )					// 11
-				return OW_DATA_ERR;			// data error
+				return OW_DATA_ERR;		// data error
 			}
-			else {
-				if( !b ) {				// 00 = 2 devices
-					if( diff > i || ((*id & 1) && diff != i) ) {
-					b = 1;				// now 1
-					next_diff = i;			// next pass 0
+			else 
+			{
+				if( !b ) 
+				{						// 00 = 2 devices
+					if( diff > i || ((*id & 1) && diff != i) )
+					{
+						b = 1;			// now 1
+						next_diff = i;	// next pass 0
 					}
 				}
 			}
-			ow_bit_io( b );     			// write bit
+			ow_bit_io( b );     		// write bit
 			*id >>= 1;
-			if( b ) *id |= 0x80;			// store bit
+			if( b ) *id |= 0x80;		// store bit
 
 			i--;
 
 		} while( --j );
 
-		id++;					// next byte
+		id++;							// next byte
 
 	} while( i );
 
-	return next_diff;				// to continue search
+	return next_diff;					// to continue search
 }
 
 
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void ow_command( uint8_t command, uint8_t *id )
 {
 	uint8_t i;
 
 	ow_reset();
 
-	if( id ) {
-		ow_byte_wr( OW_MATCH_ROM );			// to a single device
+	if( id ) 
+	{
+		ow_byte_wr( OW_MATCH_ROM );		// to a single device
 		i = OW_ROMCODE_SIZE;
-		do {
+		do 
+		{
 			ow_byte_wr( *id );
 			id++;
 		} while( --i );
 	}
-	else {
-		ow_byte_wr( OW_SKIP_ROM );			// to all devices
+	else 
+	{
+		ow_byte_wr( OW_SKIP_ROM );		// to all devices
 	}
 
 	ow_byte_wr( command );

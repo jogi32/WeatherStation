@@ -29,9 +29,9 @@
 
 #define	OW_SEARCH_FIRST	0xFF		// start new search
 #define	OW_PRESENCE_ERR	0xFF
-#define	OW_DATA_ERR	0xFE
+#define	OW_DATA_ERR		0xFE
 #define OW_LAST_DEVICE	0x00		// last device found
-//			0x01 ... 0x40: continue searching
+									// 0x01 ... 0x40: continue searching
 
 // rom-code size including CRC
 #define OW_ROMCODE_SIZE 8
@@ -49,7 +49,5 @@ void ow_command( uint8_t command, uint8_t *id );
 void ow_parasite_enable(void);
 void ow_parasite_disable(void);
 uint8_t ow_input_pin_state(void);
-
-
 
 #endif /* ONEWIRE_H_ */

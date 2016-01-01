@@ -28,7 +28,8 @@ uint8_t DS18X20_meas_to_cel( uint8_t fc, uint8_t *sp,
 	//meas = 0xff5e; meas = 0xfe6f;
 
 	//  only work on 12bit-base
-	if( fc == DS18S20_ID ) { // 9 -> 12 bit if 18S20
+	if( fc == DS18S20_ID ) 
+	{ // 9 -> 12 bit if 18S20
 		/* Extended measurements for DS18S20 contributed by Carsten Foss */
 		meas &= (uint16_t) 0xfffe;	// Discard LSB , needed for later extended precicion calc
 		meas <<= 3;					// Convert to 12-bit , now degrees are in 1/16 degrees units
@@ -36,7 +37,8 @@ uint8_t DS18X20_meas_to_cel( uint8_t fc, uint8_t *sp,
 	}
 
 	// check for negative
-	if ( meas & 0x8000 )  {
+	if ( meas & 0x8000 )  
+	{
 		*subzero=1;      // mark negative
 		meas ^= 0xffff;  // convert to positive => (twos complement)++
 		meas++;
@@ -44,14 +46,16 @@ uint8_t DS18X20_meas_to_cel( uint8_t fc, uint8_t *sp,
 	else *subzero=0;
 
 	// clear undefined bits for B != 12bit
-	if ( fc == DS18B20_ID ) { // check resolution 18B20
+	if ( fc == DS18B20_ID ) 
+	{ // check resolution 18B20
 		i = sp[DS18B20_CONF_REG];
 		if ( (i & DS18B20_12_BIT) == DS18B20_12_BIT ) ;
 		else if ( (i & DS18B20_11_BIT) == DS18B20_11_BIT )
 			meas &= ~(DS18B20_11_BIT_UNDF);
 		else if ( (i & DS18B20_10_BIT) == DS18B20_10_BIT )
 			meas &= ~(DS18B20_10_BIT_UNDF);
-		else { // if ( (i & DS18B20_9_BIT) == DS18B20_9_BIT ) {
+		else 
+		{ // if ( (i & DS18B20_9_BIT) == DS18B20_9_BIT ) {
 			meas &= ~(DS18B20_9_BIT_UNDF);
 		}
 	}
@@ -88,10 +92,13 @@ int DS18X20_temp_cmp(uint8_t subzero1, uint16_t cel1,
 //--------//--------//--------//--------//--------//--------//--------//--------//--------
 void DS18X20_find_sensor(uint8_t *diff, uint8_t id[])
 {
-	for (;;) {
+	for (;;) 
+	{
 		*diff = ow_rom_search( *diff, &id[0] );
+		
 		if ( *diff==OW_PRESENCE_ERR || *diff==OW_DATA_ERR ||
 		  *diff == OW_LAST_DEVICE ) return;
+		  
 		if ( id[0] == DS18B20_ID || id[0] == DS18S20_ID ) return;
 	}
 }
@@ -111,11 +118,13 @@ uint8_t search_sensors(void)
 	{
 		DS18X20_find_sensor( &diff, &id[0] );
 
-		if( diff == OW_PRESENCE_ERR ) {
+		if( diff == OW_PRESENCE_ERR ) 
+		{
 			break;
 		}
 
-		if( diff == OW_DATA_ERR ) {
+		if( diff == OW_DATA_ERR ) 
+		{
 			break;
 		}
 
@@ -149,14 +158,15 @@ uint8_t	DS18X20_get_power_status(uint8_t id[])
 uint8_t DS18X20_start_meas( uint8_t with_power_extern, uint8_t id[])
 {
 	ow_reset(); //**
-	if( ow_input_pin_state() ) { // only send if bus is "idle" = high
+	if( ow_input_pin_state() ) 
+	{ // only send if bus is "idle" = high
 		ow_command( DS18X20_CONVERT_T, id );
 		if (with_power_extern != DS18X20_POWER_EXTERN)
 			ow_parasite_enable();
 		return DS18X20_OK;
 	}
-	else {
-
+	else 
+	{
 		return DS18X20_START_FAIL;
 	}
 }
@@ -175,8 +185,12 @@ uint8_t DS18X20_read_meas(uint8_t *id, uint8_t *subzero, uint8_t *cel, uint8_t *
 	ow_reset(); //**
 	ow_command(DS18X20_READ, id);
 	for ( i=0 ; i< DS18X20_SP_SIZE; i++ ) sp[i]=ow_byte_rd();
+	
 	if ( crc8( &sp[0], DS18X20_SP_SIZE ) )
+	{
 		return DS18X20_ERROR_CRC;
+	}
+		
 	DS18X20_meas_to_cel(id[0], sp, subzero, cel, cel_frac_bits);
 	return DS18X20_OK;
 }
@@ -194,9 +208,14 @@ uint8_t DS18X20_read_meas_single(uint8_t familycode, uint8_t *subzero, uint8_t *
 	uint8_t sp[DS18X20_SP_SIZE];
 
 	ow_command(DS18X20_READ, NULL);
+	
 	for ( i=0 ; i< DS18X20_SP_SIZE; i++ ) sp[i]=ow_byte_rd();
+	
 	if ( crc8( &sp[0], DS18X20_SP_SIZE ) )
+	{
 		return DS18X20_ERROR_CRC;
+	}
+	
 	DS18X20_meas_to_cel(familycode, sp, subzero, cel, cel_frac_bits);
 
 

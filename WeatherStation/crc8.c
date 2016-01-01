@@ -26,14 +26,20 @@ uint8_t	crc8 ( uint8_t *data_in, uint16_t number_of_bytes_to_read )
 		data = data_in[loop_count];
 
 		bit_counter = 8;
-		do {
+		
+		do 
+		{
 			feedback_bit = (crc ^ data) & 0x01;
 
-			if ( feedback_bit == 0x01 ) {
+			if ( feedback_bit == 0x01 ) 
+			{
 				crc = crc ^ CRC8POLY;
 			}
+			
 			crc = (crc >> 1) & 0x7F;
-			if ( feedback_bit == 0x01 ) {
+			
+			if ( 0x01 == feedback_bit ) 
+			{
 				crc = crc | 0x80;
 			}
 

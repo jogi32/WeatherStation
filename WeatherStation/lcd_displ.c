@@ -11,7 +11,9 @@
 #include "lcd_displ.h"
 #include <avr/pgmspace.h>
 
+
 // procedura wysyla 4 bity na wyswietlacz
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_send_4(unsigned char b)
 {
 	set_lcd_en;
@@ -31,6 +33,8 @@ void lcd_send_4(unsigned char b)
 	_delay_us(1);		//  min 500ns
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_send_8(unsigned char b)
 {
 	lcd_send_4(b>>4);  // najpierw czêœæ bardziej znacz¹ca
@@ -38,6 +42,7 @@ void lcd_send_8(unsigned char b)
 }
 
 
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_send_com(unsigned char b)
 {
 	clr_lcd_rs;													// rs = 0  wysy³anie rozkazu
@@ -46,7 +51,7 @@ void lcd_send_com(unsigned char b)
 }
 
 
-
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_send_data(unsigned char b)
 {
 	set_lcd_rs;													// rs = 1  wysy³anie danej (do pamiêci)
@@ -55,7 +60,7 @@ void lcd_send_data(unsigned char b)
 }
 
 
-
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_init(void)
 {
 	ddr_d4; ddr_d5; ddr_d6; ddr_d7; ddr_en; ddr_rs; ddr_light;	//kierunek portów = 1  (wyjscie)
@@ -69,6 +74,8 @@ void lcd_init(void)
 	lcd_send_com(0x0C); _delay_ms(1);							// w³acz, bez kursora i migania
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_control( unsigned char on, unsigned char cur, unsigned char blink)
 {
 	unsigned char v=0;
@@ -76,27 +83,37 @@ void lcd_control( unsigned char on, unsigned char cur, unsigned char blink)
 	lcd_send_com( v );
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_clear(void)
 {
 	lcd_send_com(1);
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_home(void)
 {
 	lcd_send_com(2);
 	_delay_ms(2);
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_gotoxy(unsigned char x, unsigned char y)
 {
 	lcd_send_com( 128 |   ((y==1)? 64:0) | x  );
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_swrite( char *s)
 {int i=0;
 	while(s[i] && i<1000)  { lcd_send_data(s[i]);	++i; }
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_swrite_P(const char *s)
 {
 	register char znak;
@@ -106,6 +123,8 @@ void lcd_swrite_P(const char *s)
 	}
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void lcd_iwrite(int i)
 {
 	char s[10];
