@@ -16,18 +16,18 @@
 #include <util/delay.h>
 #include <util/setbaud.h>
 
+#include "BMP180.h"
 #include "dht.h"
 #include "ds18x20.h"
-#include "lcd_displ.h"
 #include "i2c_twi.h"
-#include "BMP180.h"
+#include "lcd_displ.h"
 
 
-#define SPEAKER		_BV(PB3)
-#define HUM_EARTH	_BV(PB2)
-#define RAIN		_BV(PD2)
-#define _18B20		_BV(PD3)
-#define DHT22		_BV(PD6)
+#define SPEAKER		(1<<PB3)
+#define HUM_EARTH	(1<<PB2)
+#define RAIN		(1<<PD2)
+#define _18B20		(1<<PD3)
+#define DHT22		(1<<PD6)
 #define HUM_E_ADC	(0<<MUX2) |(0<<MUX1) | (0<<MUX0)
 #define RAIN_ADC	(0<<MUX2) |(0<<MUX1) | (1<<MUX0)
 #define NUM_FOR_MES 10
@@ -38,6 +38,10 @@ void ADC_init();
 void ADC_mes();
 void ADCReadVaue();
 void ADC_RUNTIME(uint32_t* MES);
+void BH1750_init (void);
+void BH1750_read (uint8_t Adress, uint8_t Mode, uint8_t Length, uint8_t *buf);
+void BH1750_getData();
+void BMP180_getData();
 void DS18X20Init();
 void DS18X20Read();
 void Hello();
@@ -83,15 +87,12 @@ float dthHumidity = 0;
 // bufor dla dczytu pomiarów
 uint8_t light_buf [2];
 
-//deklaracje funkcji dla inicjalizaji i odczytu danych z czujnika BH1750
-void BH1750_init (void);
-void BH1750_read (uint8_t Adress, uint8_t Mode, uint8_t Length, uint8_t *buf);
-
 uint64_t lux_temp = 0;
 uint64_t lux = 0;
 
 long temp, press;
 
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 int main(void)
 {
 	DDRB  |= (SPEAKER);
@@ -103,26 +104,23 @@ int main(void)
 	timer0Init();	
 	USART_Init();
 	
-	// ustawienie prêdkoœæ 100 kHz na magistrali I2C
-	i2cSetBitrate( 100 );
-	
-	//inicjalizacja BH1750_ADR
+	i2cSetBitrate(100);
 	BH1750_init();
+	BMP180_init();
 	
 	_delay_ms(1000);
-	BMP180_init();
 		
 	sei();
 	
-	_delay_ms(100);
-	//Hello();
+	Hello();
 
     while (1) 
     {		
 		if (s1_flag)
 		{
-			temp = BMP180_gett();
-			press = BMP180_getp();
+			BH1750_getData();
+			
+			BMP180_getData();
 			
 			SecondsRuntime();
 			
@@ -138,6 +136,8 @@ int main(void)
     }
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 ISR(TIMER0_COMP_vect)
 {
 	if (++ms>99)
@@ -154,15 +154,20 @@ ISR(TIMER0_COMP_vect)
 	}
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void ADC_init()
 {
-	//Start ADC, external Vcc, one conversion mode, preskaler 128, input PIN0-7, align to right
+	//Start ADC, external Vcc, one conversion mode, preskaler 128, input PIN0-7, 
+	//align to right
 	ADCSRA	|=	(1<<ADEN)					//Bit 7 – ADEN: ADC Enable
 	|	(1<<ADPS0)
 	|	(1<<ADPS1)
-	|	(1<<ADPS2);							//ADPS2:0: ADC Prescaler Select Bits (set prescaler) preskaler= 128
+	|	(1<<ADPS2);							//ADPS2:0: ADC Prescaler Select Bits 
+											//(set prescaler) preskaler= 128
 
-	ADMUX	=	(0<<REFS1) | (1<<REFS0)		//External 3.50V Voltage Reference with external capacitor at AREF pin
+	ADMUX	=	(0<<REFS1) | (1<<REFS0)		//External 3.50V Voltage Reference with
+											// external capacitor at AREF pin
 	|HUM_E_ADC;								//Input Channel Selections (ADC3 - Pin 3 )
 	
 	DDRC	&=~	(1<<PA0);					//Set input ADC
@@ -175,15 +180,21 @@ void ADC_init()
 	DDRC	&=~ (1<<PA7);					//Set input ADC
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void ADC_mes()
 {
-	ADCSRA |= (1<<ADSC);		//Bit 6 – ADSC: ADC Start Conversion (run single conversion)
+	ADCSRA |= (1<<ADSC);		//Bit 6 – ADSC: ADC Start Conversion 
+								//(run single conversion)
 	while(ADCSRA & (1<<ADSC));	//wait for end of conversion
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void ADCReadVaue()
 {
-	ADMUX  = (0<<REFS1) | (1<<REFS0)    //External 3.50V Voltage Reference with external capacitor at AREF pin
+	ADMUX  = (0<<REFS1) | (1<<REFS0)    //External 3.50V Voltage Reference with 
+										//external capacitor at AREF pin
 	|HUM_E_ADC;
 	_delay_ms(10);
 	ADC_RUNTIME(&humEarthValue);
@@ -194,6 +205,8 @@ void ADCReadVaue()
 	ADC_RUNTIME(&rainValue);
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void ADC_RUNTIME(uint32_t* MES)
 {
 	uint8_t i = 0;
@@ -206,9 +219,12 @@ void ADC_RUNTIME(uint32_t* MES)
 	*MES /= NUM_FOR_MES;
 }
 
-//funkcja inicjalizacji pracy czujnika BH1750
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void BH1750_init (void)
 {
+	//funkcja inicjalizacji pracy czujnika BH1750
+	
 	TWI_start();
 	TWI_write(BH1750_ADR);
 	TWI_write(BH1750_POWER_ON);
@@ -216,9 +232,11 @@ void BH1750_init (void)
 	TWI_stop();
 }
 
-//funkcja odczytu danych z czujnika BH1750
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void BH1750_read(uint8_t Adress, uint8_t Mode, uint8_t Length, uint8_t *buf)
 {
+	//funkcja odczytu danych z czujnika BH1750
 	TWI_start();
 	TWI_write(Adress);
 	TWI_write(Mode);
@@ -228,6 +246,27 @@ void BH1750_read(uint8_t Adress, uint8_t Mode, uint8_t Length, uint8_t *buf)
 	TWI_stop();
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
+void BH1750_getData()
+{
+	BH1750_read( BH1750_ADR, BH1750_ONE_TIME_HIGH_RES_MODE, 2, light_buf );
+
+	lux_temp = (light_buf[0]<<8);
+	lux_temp +=light_buf[1];
+	lux = (float)(lux_temp)/(1.2);
+}
+
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
+void BMP180_getData()
+{
+	temp = BMP180_gett();
+	press = BMP180_getp();
+}
+
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void DS18X20Init()
 {
 	ds18b = search_sensors();
@@ -237,6 +276,8 @@ void DS18X20Init()
 	DS18X20Read();
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void DS18X20Read()
 {
 	if (DS18X20_OK == DS18X20_read_meas_single(ds18b, &subzero, &cel, &cel_frac))
@@ -259,12 +300,14 @@ void DS18X20Read()
 	}
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void Hello()
 {
 	lcd_gotoxy(0,0);
 	lcd_swrite_P(PSTR("WeatherStation"));
 	lcd_gotoxy(0,1);
-	for (subzero=0;subzero<16;subzero++)	//subzero uzyte w celu oszczedzania miejsca
+	for (subzero=0;subzero<16;subzero++)
 	{
 		lcd_swrite("+");
 		_delay_ms(200);
@@ -275,6 +318,8 @@ void Hello()
 	lcd_home();
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void IntToStr()
 {
 	itoa(cel,buf,10);
@@ -284,6 +329,8 @@ void IntToStr()
 	strcat(temperatureDS18b20,buf);
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void LcdDisplayData()
 {
 	lcd_clear();
@@ -306,6 +353,8 @@ void LcdDisplayData()
 	lcd_swrite(" ");
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void SecondsRuntime()
 {
 	if ((second%3) == 0)
@@ -317,12 +366,6 @@ void SecondsRuntime()
 	if ((second%3) == 1)
 	{
 		DS18X20_start_meas(DS18X20_POWER_EXTERN,NULL);
-		
-		BH1750_read( BH1750_ADR, BH1750_ONE_TIME_HIGH_RES_MODE, 2, light_buf );
-		
-		lux_temp = (light_buf[0]<<8);
-		lux_temp +=light_buf[1];
-		lux = (float)(lux_temp)/(1.2);
 	}
 	if ((second%3) == 2)
 	{
@@ -332,6 +375,8 @@ void SecondsRuntime()
 	s1_flag = 0;
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void timer0Init()
 {
 	TCCR0 |= (1<<WGM01);			//tryb CTC
@@ -340,6 +385,8 @@ void timer0Init()
 	TIMSK |= (1<<OCIE0);			//zezwolenie na przerwanie compare match
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void USARTMakeDataFrame()
 {
 	strcpy(usartData,temperatureDS18b20);
@@ -389,6 +436,8 @@ void USARTMakeDataFrame()
 	strcat(usartData,&CR);
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void USART_Init()
 {
 	/*Set baud rate */
@@ -402,6 +451,8 @@ void USART_Init()
 	UCSRC = (1<<URSEL)|(1<<USBS)|(3<<UCSZ0);
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void USART_TransmitByte(uint8_t a_data)
 {
 	/* Wait for empty transmit buffer */
@@ -411,6 +462,8 @@ void USART_TransmitByte(uint8_t a_data)
 	UDR = a_data;
 }
 
+
+//--------//--------//--------//--------//--------//--------//--------//--------//--------
 void USART_SendText(char* a_Text)
 {
 	while(*a_Text != 0x00)
