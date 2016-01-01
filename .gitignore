@@ -53,3 +53,9 @@ Temporary Items
 *.lss
 *.map
 *.srec
+*.o
+*.elf
+WeatherStation/Debug/WeatherStation.hex
+*.lss
+*.map
+WeatherStation/Debug/WeatherStation.srec
