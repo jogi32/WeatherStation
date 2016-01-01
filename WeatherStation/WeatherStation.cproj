@@ -109,6 +109,12 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BH1750.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="BH1750.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="BMP180.c">
       <SubType>compile</SubType>
     </Compile>

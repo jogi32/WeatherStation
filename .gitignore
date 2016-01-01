@@ -59,3 +59,4 @@ WeatherStation/Debug/WeatherStation.hex
 *.lss
 *.map
 WeatherStation/Debug/WeatherStation.srec
+*.atsuo
