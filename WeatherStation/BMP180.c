@@ -20,7 +20,8 @@ long ut, up, t, p, B5;
 
 
 //--------//--------//--------//--------//--------//--------//--------//--------//--------
-void BMP180_init( void ) {
+void BMP180_init(void) 
+{
 	uint8_t buf[22];
 	
 	TWI_read_buf( BMP180_ADDR, 0xAA, 22, buf );
@@ -41,7 +42,8 @@ void BMP180_init( void ) {
 
 
 //--------//--------//--------//--------//--------//--------//--------//--------//--------
-void BMP180_getut(void) {
+void BMP180_getut(void) 
+{
 	//odczyt temperatury bez kompensacji
 	uint8_t  buf[2], g=0x2E;
 	TWI_write_buf( BMP180_ADDR, 0xF4, 1, &g );
@@ -52,7 +54,8 @@ void BMP180_getut(void) {
 
 
 //--------//--------//--------//--------//--------//--------//--------//--------//--------
-void BMP180_getup(void){
+void BMP180_getup(void)
+{
 	//odczyt cisnienia bez kompensacji
 	uint8_t  buf[3], g;
 	g=0x34+(BMP180_MODE << 6);
@@ -65,7 +68,8 @@ void BMP180_getup(void){
 
 
 //--------//--------//--------//--------//--------//--------//--------//--------//--------
-long BMP180_gett(void){
+long BMP180_gett(void)
+{
 	long x1,x2, t;
 	BMP180_getut();
 	x1 = ((long)ut -  AC6) *  AC5 >> 15;
@@ -77,8 +81,8 @@ long BMP180_gett(void){
 
 
 //--------//--------//--------//--------//--------//--------//--------//--------//--------
-long BMP180_getp(void){
-//	long x1,x2,x3,b3,b6;
+long BMP180_getp(void)
+{
 	int32_t x1,x2,x3,b3,b6;
 	unsigned long b4,b7;
 	long p;
