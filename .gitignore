@@ -46,10 +46,10 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-.o
-.d
-.hex
-.elf
-.lss
-.map
-.srec
+*.o
+*.d
+*.hex
+*.elf
+*.lss
+*.map
+*.srec
