@@ -2,6 +2,8 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
+BH1750.c
+
 BMP180.c
 
 crc8.c
