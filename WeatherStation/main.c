@@ -320,11 +320,8 @@ void SecondsRuntime()
 		
 		BH1750_read( BH1750_ADR, BH1750_ONE_TIME_HIGH_RES_MODE, 2, light_buf );
 		
-		//lux_temp = 0;
 		lux_temp = (light_buf[0]<<8);
-		//lux_temp = lux;
 		lux_temp +=light_buf[1];
-		
 		lux = (float)(lux_temp)/(1.2);
 	}
 	if ((second%3) == 2)
@@ -378,9 +375,16 @@ void USARTMakeDataFrame()
 	itoa(temp,buf,10);
 	strcat(usartData,buf);
 	strcat(usartData," ");
-	itoa(press,buf,10);
+	
+	itoa(press>>8,buf,10);
 	strcat(usartData,buf);
 	strcat(usartData," ");
+	
+	strcat(usartData," ");
+	itoa(press & 0x00FF,buf,10);
+	strcat(usartData,buf);
+	strcat(usartData," ");
+	
 	
 	strcat(usartData,&CR);
 }
